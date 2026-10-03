@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Volver a SocialFlow</title>
+<style>body{font:18px system-ui;max-width:650px;margin:10vh auto;padding:24px}a{display:inline-block;background:#2457d6;color:white;padding:16px;border-radius:10px;text-decoration:none}</style>
+</head>
+<body>
+<h1>Completar conexión con Meta</h1>
+<p id="message">Comprobando la respuesta de Meta…</p>
+<a id="continue" hidden>Continuar en SocialFlow</a>
+<p>SocialFlow debe estar abierto en esta misma computadora.</p>
+<script>
+'use strict';
+const input = new URLSearchParams(location.search);
+history.replaceState(null, '', location.pathname);
+const state = input.get('state') || '';
+const code = input.get('code') || '';
+const error = input.get('error') || '';
+const message = document.getElementById('message');
+if (!/^[A-Za-z0-9_-]{20,200}$/.test(state) || (!code && !error)) {
+  message.textContent = 'No hay una respuesta válida de Meta. Inicia la conexión desde SocialFlow.';
+} else {
+  const target = new URL('http://127.0.0.1:8765/oauth/meta');
+  for (const key of ['state','code','error','error_description','error_message']) {
+    const value = input.get(key);
+    if (value) target.searchParams.set(key, value);
+  }
+  const link = document.getElementById('continue');
+  link.href = target.href;
+  link.hidden = false;
+  link.referrerPolicy = 'no-referrer';
+  message.textContent = 'Pulsa el botón para entregar la respuesta a tu aplicación local. Esta página no solicita tu App secret ni tu token de acceso.';
+}
+</script>
+</body></html>
